@@ -21,7 +21,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,8 +51,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TipTimeLayout() {
     var amountInput by remember {mutableStateOf("0")}
+    var percentageInput by remember {mutableStateOf("15")}
     val amount = amountInput.toDoubleOrNull() ?: 0.0
-    val tip = calculateTip(amount)
+    val percentage = percentageInput.toDoubleOrNull() ?: 0.0
+    val tip = calculateTip(amount, percentage)
 
     Column(
         modifier = Modifier
@@ -73,7 +74,17 @@ fun TipTimeLayout() {
         EditNumberField(
             amountInput,
             { amountInput = it},
-            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth())
+            {Text((stringResource(R.string.bill_amount)))},
+            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
+        )
+        EditNumberField(
+            value = percentageInput,
+            {percentageInput = it},
+            {Text((stringResource(R.string.percentage_amount)))},
+            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
+        )
+
+
         Text(
             text = stringResource(R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall
@@ -91,17 +102,20 @@ private fun calculateTip(amount: Double, tipPercent: Double = 15.0): String {
 fun EditNumberField(
     value: String,
     onValueChange: (String) -> Unit,
+    labelValue: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TextField(
         value = value,
         onValueChange = onValueChange,
-        label = {Text((stringResource(R.string.bill_amount)))},
+        label = labelValue,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = modifier
     )
 }
+
+
 
 
 @Preview(showBackground = true)
